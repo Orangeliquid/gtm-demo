@@ -29,6 +29,7 @@
 
     <h1 id="product-name">Super Widget</h1>
     <span id="product-price">19.99</span>
+    <button id="send-data-btn">Send Product Data</button>
     
     <!-- Push product data into GTM dataLayer on page load -->
     <script>
@@ -43,6 +44,52 @@
                 product_name: nameElement ? nameElement.innerText : null,
                 product_price: priceElement ? priceElement.innerText : null
             });
+        });
+    </script>
+
+    <script>
+        document.getElementById('send-data-btn').addEventListener('click', async function () {
+            const dataLayer = window.dataLayer || [];
+
+            // Find the productView event
+            const productEvent = dataLayer.find(item => item.event === 'productView');
+
+            // Early fallback if we fail to find productView in dataLayer
+            if (!productEvent) {
+                console.error('productView event not found in dataLayer')
+                return;
+            }
+
+            // Build the payload
+            const payload = {
+                product_name: productEvent.product_name,
+                product_price: productEvent.product_price
+            };
+
+            // Attempt to POST payload -> log response or catch error
+            try {
+                const response = await fetch('https://httpbin.org/post', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                // Throw if we don't receive 2xx status code
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`)
+                }
+
+                const data = await response.json();
+                
+                // Print output to console
+                console.log('Response payload:', data.json)
+            
+            // Catch network errors 
+            } catch (error) {
+                console.error('Request failed:', error);
+            }
         });
     </script>
 
