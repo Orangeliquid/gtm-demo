@@ -26,8 +26,25 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-56QM2HRB"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
+     
     <h1 id="product-name">Super Widget</h1>
     <span id="product-price">19.99</span>
+    
+    <!-- Push product data into GTM dataLayer on page load -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        window.addEventListener('load', function () {
+            const nameElement = document.getElementById('product-name');
+            const priceElement = document.getElementById('product-price');
+
+            window.dataLayer.push({
+                event: 'productView',
+                product_name: nameElement ? nameElement.innerText : null,
+                product_price: priceElement ? priceElement.innerText : null
+            });
+        });
+    </script>
 
 </body>
 </html>
